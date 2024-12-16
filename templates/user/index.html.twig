@@ -12,7 +12,6 @@
                 <th>Prénom</th>
                 <th>Nom</th>
                 <th>Email</th>
-                <th>Date de création</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -22,7 +21,6 @@
                     <td>{{ user.prenom }}</td>
                     <td>{{ user.nom }}</td>
                     <td>{{ user.email }}</td>
-                    <td>{{ user.createdAt|date('d/m/Y H:i') }}</td>
                     <td>
                         <a href="{{ path('user_edit', {id: user.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
                         <form action="{{ path('user_delete', {id: user.id}) }}" method="post" class="d-inline">
