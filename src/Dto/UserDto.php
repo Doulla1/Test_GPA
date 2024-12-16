@@ -36,7 +36,7 @@ class UserDto
         maxMessage: 'L\'email ne peut pas dépassser 180 caractères',
     )]
     #[Assert\Regex(
-        pattern: "/^[^@]+@[^@]\.[a-zA-Z]{2,}$/",
+        pattern: "/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/",
         message: 'L\'email est invalide'
     )]
     public string $email;

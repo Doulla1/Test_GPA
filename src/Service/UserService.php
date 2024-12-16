@@ -23,7 +23,7 @@ class UserService
 
             return $user;
         } catch (\Exception $e) {
-            throw new \RuntimeException('Erreur lors de la création de l\'utilisateur.');
+            throw new \RuntimeException('Erreur lors de la création de l\'utilisateur.'. $e->getMessage ());
         }
     }
 

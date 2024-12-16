@@ -27,9 +27,9 @@ class UserApiController extends AbstractController
     {
         try {
             $users = $this->userRepository->findAll();
-            return $this->json(['data' => $users], Response::HTTP_OK);
+            return new JsonResponse(['data' => $users], Response::HTTP_OK);
         } catch (\Exception $e) {
-            return $this->json(['error' => 'Une erreur est survenue.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['error' => 'Une erreur est survenue.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -39,34 +39,37 @@ class UserApiController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
 
-            // Validation des données présentes
             if (!isset($data['prenom'], $data['nom'], $data['email'])) {
-                return $this->json(
+                return new JsonResponse(
                     ['error' => 'Les champs nom, prenom et email sont obligatoires.'],
                     Response::HTTP_BAD_REQUEST
                 );
             }
 
-            // Mapper les données dans le DTO
             $userDto = new UserDto(
                 trim($data['prenom']),
                 trim($data['nom']),
                 trim($data['email'])
             );
 
-            // Valider le DTO
             $errors = $this->validator->validate($userDto);
             if (count($errors) > 0) {
-                return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[] = [
+                        'field' => $error->getPropertyPath(),
+                        'message' => $error->getMessage()
+                    ];
+                }
+                return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
             }
 
-            // Créer l'utilisateur via le service
             $user = $this->userService->createUser($userDto);
 
-            return $this->json(['data' => $user], Response::HTTP_CREATED);
+            return new JsonResponse(['data' => $user], Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            return $this->json(
-                ['error' => 'Une erreur est survenue lors de la création de l\'utilisateur.'],
+            return new JsonResponse(
+                ['error' => 'Une erreur est survenue lors de la création de l\'utilisateur.'. $e->getMessage ()],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -78,32 +81,36 @@ class UserApiController extends AbstractController
         try {
             $user = $this->userRepository->find($id);
             if (!$user) {
-                return $this->json(['message' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['message' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
             }
 
             $data = json_decode($request->getContent(), true);
 
-            // Mapper les données vers le DTO
             $userDto = new UserDto(
                 trim($data['prenom']),
                 trim($data['nom']),
                 trim($data['email'])
             );
 
-            // Valider le DTO
             $errors = $this->validator->validate($userDto);
             if (count($errors) > 0) {
-                return $this->json(['errors' => (string) $errors], Response::HTTP_BAD_REQUEST);
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[] = [
+                        'field' => $error->getPropertyPath(),
+                        'message' => $error->getMessage()
+                    ];
+                }
+                return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
             }
 
-            // Mettre à jour l'utilisateur via le service
             $updatedUser = $this->userService->updateUser($user, $userDto);
 
-            return $this->json(['data' => $updatedUser], Response::HTTP_OK);
+            return new JsonResponse(['data' => $updatedUser], Response::HTTP_OK);
         } catch (EntityNotFoundException $e) {
-            return $this->json(['error' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
-            return $this->json(
+            return new JsonResponse(
                 ['error' => 'Une erreur est survenue lors de la mise à jour de l\'utilisateur.'],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -116,17 +123,16 @@ class UserApiController extends AbstractController
         try {
             $user = $this->userRepository->find($id);
             if (!$user) {
-                return $this->json(['message' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
+                return new JsonResponse(['message' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
             }
 
-            // Supprimer l'utilisateur via le service
             $this->userService->deleteUser($user);
 
-            return $this->json(['message' => 'Utilisateur supprimé.'], Response::HTTP_NO_CONTENT);
+            return new JsonResponse(['message' => 'Utilisateur supprimé.'], Response::HTTP_NO_CONTENT);
         } catch (EntityNotFoundException $e) {
-            return $this->json(['error' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => 'Utilisateur non trouvé.'], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
-            return $this->json(
+            return new JsonResponse(
                 ['error' => 'Une erreur est survenue lors de la suppression de l\'utilisateur.'],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
