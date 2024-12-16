@@ -40,17 +40,17 @@ class UserApiController extends AbstractController
             $data = json_decode($request->getContent(), true);
 
             // Validation des données présentes
-            if (!isset($data['firstName'], $data['lastName'], $data['email'])) {
+            if (!isset($data['prenom'], $data['nom'], $data['email'])) {
                 return $this->json(
-                    ['error' => 'Les champs firstName, lastName et email sont obligatoires.'],
+                    ['error' => 'Les champs nom, prenom et email sont obligatoires.'],
                     Response::HTTP_BAD_REQUEST
                 );
             }
 
             // Mapper les données dans le DTO
             $userDto = new UserDto(
-                trim($data['firstName']),
-                trim($data['lastName']),
+                trim($data['prenom']),
+                trim($data['nom']),
                 trim($data['email'])
             );
 
@@ -85,8 +85,8 @@ class UserApiController extends AbstractController
 
             // Mapper les données vers le DTO
             $userDto = new UserDto(
-                trim($data['firstName']),
-                trim($data['lastName']),
+                trim($data['prenom']),
+                trim($data['nom']),
                 trim($data['email'])
             );
 
