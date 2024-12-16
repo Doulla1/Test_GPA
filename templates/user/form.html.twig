@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ user is defined ? 'Modifier' : 'Créer' }} un utilisateur{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>{{ user is defined ? 'Modifier' : 'Créer' }} un utilisateur</h1>
+        {{ form_start(form) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.email) }}
+        <button type="submit" class="btn btn-primary mt-3">{{ user is defined ? 'Modifier' : 'Créer' }}</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
